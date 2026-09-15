@@ -15,9 +15,10 @@ if not os.path.exists(DATA_DIR):
 
 FILES_PATH = {
     '健康記録': os.path.join(DATA_DIR, 'health_log.csv'),
-    '読書記録': os.path.join(DATA_DIR, 'reading_log_st.csv'),
+    '読書記録': os.path.join(DATA_DIR, 'reading_log.csv'),
     '夕食記録': os.path.join(DATA_DIR, 'dinner_log.csv'),
-    '読書情報': os.path.join(DATA_DIR, 'book_info_st.json')
+    'ビデオ記録': os.path.join(DATA_DIR, 'video_log.csv'),
+    '読書情報': os.path.join(DATA_DIR, 'book_info.json')
 }
 
 def save_to_csv(filename, data_list):
@@ -197,11 +198,17 @@ elif menu == "ダウンロード":
             reading_log = f_in.read()
         with open(FILES_PATH['夕食記録'], 'r', encoding='utf-8') as f_in:
             dinner_log = f_in.read()
+        with open(FILES_PATH['ビデオ記録'], 'r', encoding='utf-8') as f_in:
+            video_log = f_in.read()
+        with open(FILES_PATH['読書情報'], 'r', encoding='utf-8') as f_in:
+            book_info = f_in.read()
         zip_buffer = io.BytesIO() # メモリ上にZIPファイルを作成
         with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
             zip_file.writestr("health_log_" + today_yymmdd + ".csv", health_log)
             zip_file.writestr("reading_log_" + today_yymmdd + ".csv", reading_log)
             zip_file.writestr("dinner_log_" + today_yymmdd + ".csv", dinner_log)
+            zip_file.writestr("video_log_" + today_yymmdd + ".csv", video_log)
+            zip_file.writestr("book_info_" + today_yymmdd + ".json", book_info)
         zip_buffer.seek(0) # バッファのポインタを先頭に戻す
         if st.download_button(label="ダウンロード（zip）", data=zip_buffer, file_name="daily_log_" + today_yymmdd + ".zip"):
             st.session_state.submitted_id = "download"
