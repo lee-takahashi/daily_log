@@ -3,8 +3,10 @@ import pandas as pd
 from datetime import datetime
 import os
 import json
+import io
+import zipfile
 
-SCRIPT_VER = 'ver.260409_01'
+SCRIPT_VER = 'ver.260915_01'
 
 # ---------- 設定 & データ準備 ----------
 DATA_DIR = 'data'
@@ -40,6 +42,7 @@ week_jp = ['月', '火', '水', '木', '金', '土', '日']
 now = datetime.now()
 youbi = week_jp[now.weekday()]
 today_str = now.strftime(f"%Y年%m月%d日（{youbi}）")
+today_yymmdd = now.strftime(f"%y%m%d")
 
 # ---------- UI構築 ----------
 st.set_page_config(page_title='日々記録', layout="centered")
@@ -49,7 +52,7 @@ st.set_page_config(page_title='日々記録', layout="centered")
 st.subheader('🏠 日々記録メニュー')
 st.text(SCRIPT_VER)
 st.write(f"今日は **{today_str}** です。")
-menu = st.selectbox('メニュー', ['健康記録', '読書記録', '夕食記録', '記録一覧'])
+menu = st.selectbox('メニュー', ['健康記録', '読書記録', '夕食記録', '記録一覧', 'ダウンロード'])
 st.text('')
 
 # メニューを切り替えたら保存フラグをリセット
@@ -185,6 +188,29 @@ elif menu == "記録一覧":
         else:
             st.write("データがありません。")
 
+elif menu == "ダウンロード":
+    st.subheader("データダウンロード")
+    if st.session_state.submitted_id != "download":
+        with open(FILES_PATH['健康記録'], 'r', encoding='utf-8') as f_in:
+            health_log = f_in.read()
+        with open(FILES_PATH['読書記録'], 'r', encoding='utf-8') as f_in:
+            reading_log = f_in.read()
+        with open(FILES_PATH['夕食記録'], 'r', encoding='utf-8') as f_in:
+            dinner_log = f_in.read()
+        zip_buffer = io.BytesIO() # メモリ上にZIPファイルを作成
+        with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            zip_file.writestr("health_log_" + today_yymmdd + ".csv", health_log)
+            zip_file.writestr("reading_log_" + today_yymmdd + ".csv", reading_log)
+            zip_file.writestr("dinner_log_" + today_yymmdd + ".csv", dinner_log)
+        zip_buffer.seek(0) # バッファのポインタを先頭に戻す
+        if st.download_button(label="ダウンロード（zip）", data=zip_buffer, file_name="daily_log_" + today_yymmdd + ".zip"):
+            st.session_state.submitted_id = "download"
+            st.rerun()
+    else:
+        st.success("✅ データをダウンロードしました！")
+        if st.button('終了'):
+            st.session_state.submitted_id = None
+            st.rerun()
 
 #2026-04-09 07:11:35.543 Please replace `use_container_width` with `width`.
 #`use_container_width` will be removed after 2025-12-31.
