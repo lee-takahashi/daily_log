@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 import json
 import io
@@ -40,10 +41,11 @@ if "submitted_id" not in st.session_state:
 
 # 今日の日付表示
 week_jp = ['月', '火', '水', '木', '金', '土', '日']
-now = datetime.now()
-youbi = week_jp[now.weekday()]
-today_str = now.strftime(f"%Y年%m月%d日（{youbi}）")
-today_yymmdd = now.strftime(f"%y%m%d")
+# now = datetime.now()
+now_jst = datetime.now(ZoneInfo("Asia/Tokyo"))
+youbi = week_jp[now_jst.weekday()]
+today_str = now_jst.strftime(f"%Y年%m月%d日（{youbi}）")
+today_yymmdd = now_jst.strftime(f"%y%m%d")
 
 # ---------- UI構築 ----------
 st.set_page_config(page_title='日々記録', layout="centered")
