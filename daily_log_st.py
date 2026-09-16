@@ -69,7 +69,7 @@ if menu == '健康記録':
     st.subheader('健康記録')
     if st.session_state.submitted_id != "health":
         with st.form("health_form"):
-            date_val = st.date_input('日付', now)
+            date_val = st.date_input('日付', now_jst)
             weight = st.text_input('体重 (kg)')
             bfp = st.text_input('体脂肪率 (%)')
             muscle = st.text_input('筋肉量 (kg)')
@@ -94,7 +94,7 @@ elif menu == "読書記録":
     st.subheader('読書記録')
     if st.session_state.submitted_id != "reading":
         with st.form("reading_form"):
-            date_val = st.date_input('日付', now)
+            date_val = st.date_input('日付', now_jst)
             read_mode = st.radio('入手区分', ('Audible', 'Book'), horizontal=True)
             book_info = load_book_info()
             st.text(book_info['Audible']['書名'] + '    ／    ' + book_info['Book']['書名'])
@@ -139,7 +139,7 @@ elif menu == "夕食記録":
     st.subheader("夕食記録")
     if st.session_state.submitted_id != "dinner":
         with st.form("dinner_form"):
-            date_val = st.date_input("日付", now)
+            date_val = st.date_input("日付", now_jst)
             cls = st.text_input("分類")
             main = st.text_input("主菜")
             sub1 = st.text_input("副菜1")
